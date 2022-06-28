@@ -1,0 +1,57 @@
+﻿@page "/bin2dec"
+
+<PageTitle>Bin2Dec</PageTitle>
+
+<h1>Binário para Decimal</h1>
+<p>Baseado no escopo apresentado em <a href="https://github.com/florinpop17/app-ideas/blob/master/Projects/1-Beginner/Bin2Dec-App.md" target="_blank" rel="noopener noreferrer">florinpop17 - Bin2Dec</a></p>
+
+<div class="mb-3 mt-3">
+    <label class="form-label">Número em Binário:</label>
+    <input @bind="binarioEmString" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 49))" data-mask="0000 0000" type="text" class="form-control" maxlength="8" min="0" max="1" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Número em Decimal:</label>
+    <input @bind="binarioEmDecimal" type="text" class="form-control" readonly />    
+</div>
+
+<button class="btn btn-primary" @onclick="ConverteBinarioParaDecimal" >Converter</button>
+
+@code {
+
+    private string binarioEmString { get; set; }
+    private double binarioEmDecimal { get; set; }
+
+    public void ConverteBinarioParaDecimal()
+    {
+        binarioEmDecimal = 0;
+        int binarioEmInteiro = Int32.Parse(binarioEmString);
+        int resto = binarioEmInteiro;
+        int numero = resto % 10;
+
+        for (int i = 0; i < binarioEmString.Length; i++)
+        {
+            binarioEmDecimal = binarioEmDecimal + numero * Exponencial(2, i);
+            resto = resto / 10;
+            numero = resto % 10;
+        }
+    }
+
+    public static int Exponencial(int numero, int expoente)
+    {
+        int valorTotal = numero;
+
+        if (expoente == 0)
+        {
+            return 1;
+        }
+
+        for (int i = 0; i < (expoente - 1); i++)
+        {
+            valorTotal = valorTotal * numero;
+        }
+
+        return valorTotal;
+    }
+
+}
