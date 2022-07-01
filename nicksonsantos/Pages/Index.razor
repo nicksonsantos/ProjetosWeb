@@ -4,6 +4,8 @@
 
 <h1>Hello, world!</h1>
 
+<hr />
+
 <p>Esse é o meu site de portfólio. Aqui você vai encontrar o resultado dos meus estudos de front e back-end.</p>
 
 <p>Esse site está sendo publicado utilizando <a href="https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor" target="_blank" rel="noopener noreferrer">Blazor</a>
@@ -11,4 +13,18 @@
 
 <p>Para as soluções e projetos criados estou utilizando C#, HTML, CSS e Javascript</p>
 
-<!--<SurveyPrompt Title="How is Blazor working for you?" />-->
+<div class="alert alert-secondary mt-4">
+    <span class="oi oi-home me-2" aria-hidden="true"></span><adress>@endereco</adress>
+    |
+    <span class="oi oi-phone me-2" aria-hidden="true"></span>@telefone
+    |
+    <a href="mailto@email"><span class="oi oi-envelope-closed me-2" aria-hidden="true"></span>@email</a>
+</div>
+
+<hr />
+
+@code{
+    private string endereco = "Vila Velha, ES";
+    private string telefone = "+55 (27) 9 9710-2794";
+    private string email = "nickson12@gmail.com";
+}

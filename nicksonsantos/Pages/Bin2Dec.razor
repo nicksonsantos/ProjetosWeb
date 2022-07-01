@@ -3,41 +3,75 @@
 <PageTitle>Bin2Dec</PageTitle>
 
 <h1>Binário para Decimal</h1>
-<p>Baseado no escopo apresentado em <a href="https://github.com/florinpop17/app-ideas/blob/master/Projects/1-Beginner/Bin2Dec-App.md" target="_blank" rel="noopener noreferrer">florinpop17 - Bin2Dec</a></p>
+<p>Baseado em <a href="https://github.com/florinpop17/app-ideas/blob/master/Projects/1-Beginner/Bin2Dec-App.md" target="_blank" rel="noopener noreferrer">florinpop17 - Bin2Dec</a></p>
 
 <div class="mb-3 mt-3">
-    <label class="form-label">Número em Binário:</label>
-    <input @bind="binarioEmString" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 49))" data-mask="0000 0000" type="text" class="form-control" maxlength="8" min="0" max="1" />
+    <label class="form-label" for="binarioEmString">Número em Binário:</label>
+    <input type="text" id="binarioEmString" class="form-control" data-mask="0000 0000" placeholder="Digite 0 ou 1" maxlength="8" min="0" max="1"
+    @bind="binarioEmString" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 49))"/>
 </div>
 
 <div class="mb-3">
-    <label class="form-label">Número em Decimal:</label>
-    <input @bind="binarioEmDecimal" type="text" class="form-control" readonly />    
+    <label class="form-label" for="binarioEmDecimal">Número em Decimal:</label>
+    <input type="text" id="binarioEmDecimal" class="form-control" @bind="binarioEmDecimal" readonly />    
 </div>
 
 <button class="btn btn-primary" @onclick="ConverteBinarioParaDecimal" >Converter</button>
 
+<hr />
+
+<iframe
+  src="https://carbon.now.sh/embed?bg=rgba%28255%2C255%2C255%2C1%29&t=vscode&wt=none&l=text%2Fx-csharp&width=680&ds=true&dsyoff=20px&dsblur=68px&wc=true&wa=true&pv=56px&ph=56px&ln=false&fl=1&fm=Hack&fs=14px&lh=133%25&si=false&es=2x&wm=true&code=%2509private%2520string%253F%2520binarioEmString%2520%257B%2520get%253B%2520set%253B%2520%257D%250A%2520%2520%2520%2520private%2520double%2520binarioEmDecimal%2520%257B%2520get%253B%2520set%253B%2520%257D%250A%2520%2520%2520%2520const%2520int%2520divisorDecimal%2520%253D%252010%253B%250A%250A%2520%2520%2520%2520public%2520void%2520ConverteBinarioParaDecimal%28%29%250A%2520%2520%2520%2520%257B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520binarioEmDecimal%2520%253D%25200%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520try%250A%2520%2520%2520%2520%2520%2520%2520%2520%257B%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520if%2520%28inputNaoEstaVazio%28binarioEmString%29%29%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%257B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520int%2520binarioEmInteiro%2520%253D%2520Int32.Parse%28binarioEmString%29%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520int%2520resto%2520%253D%2520binarioEmInteiro%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520int%2520numero%2520%253D%2520resto%2520%2525%2520divisorDecimal%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520for%2520%28int%2520i%2520%253D%25200%253B%2520i%2520%253C%2520binarioEmString.Length%253B%2520i%252B%252B%29%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%257B%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520binarioEmDecimal%2520%253D%2520binarioEmDecimal%2520%252B%2520numero%2520*%2520Exponencial%282%252C%2520i%29%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520resto%2520%253D%2520resto%2520%252F%2520divisorDecimal%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520numero%2520%253D%2520resto%2520%2525%2520divisorDecimal%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%257D%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%257D%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520%257D%250A%2520%2520%2520%2520%2520%2520%2520%2520catch%2520%28Exception%2520ex%29%250A%2520%2520%2520%2520%2520%2520%2520%2520%257B%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520Console.WriteLine%28%2522Exception%253A%2520%2522%2520%252B%2520ex.Message%2520%252B%2520ex.StackTrace%29%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520%257D%250A%250A%2520%2520%2520%2520%257D%250A%250A%2520%2520%2520%2520private%2520static%2520bool%2520inputNaoEstaVazio%28string%2520textoDoInput%29%250A%2520%2520%2520%2520%257B%250A%2520%2520%2520%2520%2520%2520%2520%2520if%2520%28textoDoInput%2520%253D%253D%2520null%2520%257C%257C%2520textoDoInput%2520%253D%253D%2520%2522%2522%29%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520return%2520false%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520return%2520true%253B%250A%2520%2520%2520%2520%257D%250A%250A%2520%2520%2520%2520private%2520static%2520int%2520Exponencial%28int%2520numero%252C%2520int%2520expoente%29%250A%2520%2520%2520%2520%257B%250A%2520%2520%2520%2520%2520%2520%2520%2520int%2520valorTotal%2520%253D%2520numero%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520if%2520%28expoente%2520%253D%253D%25200%29%250A%2520%2520%2520%2520%2520%2520%2520%2520%257B%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520return%25201%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520%257D%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520for%2520%28int%2520i%2520%253D%25200%253B%2520i%2520%253C%2520%28expoente%2520-%25201%29%253B%2520i%252B%252B%29%250A%2520%2520%2520%2520%2520%2520%2520%2520%257B%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520valorTotal%2520%253D%2520valorTotal%2520*%2520numero%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520%257D%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520return%2520valorTotal%253B%250A%2520%2520%2520%2520%257D"
+  style="width: 850px; height: 1267px; border:0; transform: scale(1); overflow:hidden;"
+  sandbox="allow-scripts allow-same-origin">
+</iframe>
+
 @code {
 
-    private string binarioEmString { get; set; }
+    private string? binarioEmString { get; set; }
     private double binarioEmDecimal { get; set; }
+    const int divisorDecimal = 10;
 
     public void ConverteBinarioParaDecimal()
     {
-        binarioEmDecimal = 0;
-        int binarioEmInteiro = Int32.Parse(binarioEmString);
-        int resto = binarioEmInteiro;
-        int numero = resto % 10;
 
-        for (int i = 0; i < binarioEmString.Length; i++)
+        binarioEmDecimal = 0;
+
+        try
         {
-            binarioEmDecimal = binarioEmDecimal + numero * Exponencial(2, i);
-            resto = resto / 10;
-            numero = resto % 10;
+            if (inputNaoEstaVazio(binarioEmString))
+            {
+
+                int binarioEmInteiro = Int32.Parse(binarioEmString);
+                int resto = binarioEmInteiro;
+                int numero = resto % divisorDecimal;
+
+                for (int i = 0; i < binarioEmString.Length; i++)
+                {
+                    binarioEmDecimal = binarioEmDecimal + numero * Exponencial(2, i);
+                    resto = resto / divisorDecimal;
+                    numero = resto % divisorDecimal;
+                }
+            }
+
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Exception: " + ex.Message + ex.StackTrace);
+
+        }
+
     }
 
-    public static int Exponencial(int numero, int expoente)
+    private static bool inputNaoEstaVazio(string textoDoInput)
+    {
+        if (textoDoInput == null || textoDoInput == "")
+            return false;
+
+        return true;
+    }
+
+    private static int Exponencial(int numero, int expoente)
     {
         int valorTotal = numero;
 
