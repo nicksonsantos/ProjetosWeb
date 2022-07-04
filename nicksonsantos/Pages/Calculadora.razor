@@ -1,83 +1,319 @@
 ﻿@page "/calculadora"
 
-<h3>Calculadora</h3>
+<h1>Calculadora</h1>
+
+<p>Baseado em <a href="https://github.com/florinpop17/app-ideas/blob/master/Projects/1-Beginner/Calculator-App.md" target="_blank" rel="noopener noreferrer">florinpop17 - Calculator</a></p>
 
 <hr />
+
 &nbsp
 &nbsp
-<div class="container-fluid">
+
+<div class="container-fluid border border-primary rounded" style="width: 295px;">
+    &nbsp
     <div class="row row-cols-auto g-0">
         <div class="col">
-            <input />
+            <input type="text" id="visor" @bind="Visor" style="width: 268px; text-align:right;" readonly />
+        </div>
+    </div>
+    &nbsp
+    <div class="row row-cols-auto g-0">
+        <div class="col">
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="ApagaTudo">AC</button>
         </div>
         <div class="col">
-            <input class=""/>
+            @Botao()
         </div>
         <div class="col">
-            
+            @Botao()
         </div>
-        <div class="col">
-            
+        <div class="col justify-content-end">
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="Apaga">C</button>
         </div>
     </div>
     <div class="row row-cols-auto g-0">
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">7</button>
+            @Botao(7)
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">8</button>
+            @Botao(8)
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">9</button>
+            @Botao(9)
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">x</button>
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => CliqueEmOperador('%')">%</button>
         </div>
     </div>
     <div class="row row-cols-auto g-0">
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">4</button>
+            @Botao(4)
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">5</button>
+            @Botao(5)
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">6</button>
+            @Botao(6)
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">-</button>
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => CliqueEmOperador('x')">x</button>
         </div>
     </div>
     <div class="row row-cols-auto g-0">
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">1</button>
+            @Botao(1)
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">2</button>
+            @Botao(2)
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">3</button>
+            @Botao(3)
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">+</button>
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => CliqueEmOperador('-')">-</button>
         </div>
     </div>
     <div class="row row-cols-auto g-0">
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">+/-</button>
+            @Botao(0)
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">0</button>
+            @Botao(',')
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">,</button>
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="Igual">=</button>
         </div>
         <div class="col">
-            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">=</button>
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => CliqueEmOperador('+')">+</button>
         </div>
     </div>
+    &nbsp
 </div>
 
+<!--<button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">=</button>-->
 @code {
+
+    List<Object> ListaVisor = new List<object>();
+    string? Visor { get; set; }
+    string? VisorOperacao { get; set; }
+    string? Operador { get; set; }
+    decimal Operando1 { get; set; }
+    decimal Operando2 { get; set; }
+
+    RenderFragment Botao(char valor)
+    {
+        return builder =>
+        {
+            builder.OpenElement(1, "button");
+            builder.AddAttribute(2, "style", "width: 67px;");
+            builder.AddAttribute(3, "type", "button");
+            builder.AddAttribute(4, "class", "btn btn-outline-primary btn-lg");
+            builder.AddAttribute(5, "onclick",
+                Microsoft.AspNetCore.Components.EventCallback.Factory.Create(valor,
+                    () => Escreve(valor)));
+            builder.AddContent(6, valor);
+            builder.CloseElement();
+        };
+    }
+
+    RenderFragment Botao(int valor)
+    {
+        return builder =>
+        {
+            builder.OpenElement(1, "button");
+            builder.AddAttribute(2, "style", "width: 67px;");
+            builder.AddAttribute(3, "type", "button");
+            builder.AddAttribute(4, "class", "btn btn-outline-primary btn-lg");
+            builder.AddAttribute(5, "onclick",
+                Microsoft.AspNetCore.Components.EventCallback.Factory.Create(valor,
+                    () => Escreve(valor)));
+            builder.AddContent(6, valor);
+            builder.CloseElement();
+        };
+    }
+
+    RenderFragment Botao()
+    {
+        return builder =>
+        {
+            builder.OpenElement(1, "button");
+            builder.AddAttribute(2, "style", "width: 67px;;");
+            builder.AddAttribute(3, "type", "button");
+            builder.AddAttribute(4, "class", "btn btn-outline-primary btn-lg invisible");
+            builder.AddContent(5, "F");
+            builder.CloseElement();
+        };
+    }
+
+    void ApagaTudo()
+    {
+        Visor = "";
+        Operador = "";
+        Operando1 = Decimal.Zero;
+        Operando2 = Decimal.Zero;
+        FlagSegundaParteDaOperacao = false;
+    }
+
+    void Apaga()
+    {
+        if (VisorNaoEstaVazio())
+            Visor = Visor.Remove(Visor.Length - 1);
+    }
+
+    bool VisorNaoEstaVazio()
+    {
+        if (Visor == "" || Visor == null)
+            return false;
+
+        return true;
+    }
+
+    void Escreve(char valorBotao)
+    {
+        ListaVisor.Add(valorBotao);
+        Visor += valorBotao;
+        StateHasChanged();
+    }
+
+    void Escreve(int valorBotao)
+    {
+        ListaVisor.Add(valorBotao);
+        Visor += valorBotao.ToString();
+        StateHasChanged();
+    }
+
+    bool FlagSegundaParteDaOperacao { get; set; }
+
+    void CliqueEmOperador()
+    {
+        string subStringVisor = String.Empty;
+
+        try
+        {
+            if (VisorNaoEstaVazio())
+            {
+                foreach (var caractere in Visor)
+                {
+
+                    if (CaractereEhOperador(caractere))
+                    {
+                        Operador = Char.ToString(caractere);
+                    }
+                    else
+                    {
+                        subStringVisor += caractere;
+                    }
+                }
+
+                if (FlagSegundaParteDaOperacao)
+                {
+                    Operando2 = decimal.Parse(subStringVisor);
+                }
+                else
+                {
+                    Operando1 = decimal.Parse(subStringVisor);
+                    VisorOperacao = Visor;
+                    ApagaVisor();
+                    FlagSegundaParteDaOperacao = true;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Excecao: " + ex);
+        }
+    }
+
+    void CliqueEmOperador(char valorBotao)
+    {
+        Escreve(valorBotao);
+
+        string subStringVisor = String.Empty;
+
+        try
+        {
+            if (VisorNaoEstaVazio())
+            {
+                foreach (var caractere in Visor)
+                {
+
+                    if (CaractereEhOperador(caractere))
+                    {
+                        Operador = Char.ToString(caractere);
+                    }
+                    else
+                    {
+                        subStringVisor += caractere;
+                    }
+
+                }
+
+                if (FlagSegundaParteDaOperacao)
+                {
+                    Operando2 = decimal.Parse(subStringVisor);
+                }
+                else
+                {
+                    Operando1 = decimal.Parse(subStringVisor);
+                    VisorOperacao = Visor;
+                    ApagaVisor();
+                    FlagSegundaParteDaOperacao = true;
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Excecao: " + ex);
+        }
+    }
+
+    bool CaractereEhOperador(char caractere)
+    {
+        string caractereEmString = Char.ToString(caractere);
+
+        if (caractereEmString == "+" || caractereEmString == "-" ||
+            caractereEmString == "x" || caractereEmString == "%")
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    void ApagaVisor() => Visor = "";
+
+    void Igual()
+    {
+        if (VisorNaoEstaVazio())
+        {
+            try
+            {
+                CliqueEmOperador();
+                decimal retornoOperacao = EfetucaOperacao();
+                ApagaTudo();
+                Visor = retornoOperacao.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Excecao" + ex);
+            }
+
+        }
+
+    }
+
+    decimal EfetucaOperacao()
+    {
+        switch (Operador)
+        {
+            case "+": return Operando1 + Operando2;
+            case "-": return Operando1 - Operando2;
+            case "x": return Operando1 * Operando2;
+            case "%": return Operando1 / Operando2;
+            default: throw new Exception("Operacao Invalida");
+        }
+    }
+
 
 }
