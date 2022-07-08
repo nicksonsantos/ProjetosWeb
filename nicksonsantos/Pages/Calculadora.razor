@@ -13,6 +13,7 @@
     &nbsp
     <div class="row row-cols-auto g-0">
         <div class="col">
+            <input type="text" id="visor" @bind="VisorOperacao" style="width: 268px; text-align:right;" readonly />
             <input type="text" id="visor" @bind="Visor" style="width: 268px; text-align:right;" readonly />
         </div>
     </div>
@@ -33,13 +34,13 @@
     </div>
     <div class="row row-cols-auto g-0">
         <div class="col">
-            @Botao(7)
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => Escreve(7)">7</button>
         </div>
         <div class="col">
-            @Botao(8)
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => Escreve(8)">8</button>
         </div>
         <div class="col">
-            @Botao(9)
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => Escreve(9)">9</button>
         </div>
         <div class="col">
             <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => CliqueEmOperador('%')">%</button>
@@ -47,13 +48,13 @@
     </div>
     <div class="row row-cols-auto g-0">
         <div class="col">
-            @Botao(4)
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => Escreve(4)">4</button>
         </div>
         <div class="col">
-            @Botao(5)
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => Escreve(5)">5</button>
         </div>
         <div class="col">
-            @Botao(6)
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => Escreve(6)">6</button>
         </div>
         <div class="col">
             <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => CliqueEmOperador('x')">x</button>
@@ -61,13 +62,13 @@
     </div>
     <div class="row row-cols-auto g-0">
         <div class="col">
-            @Botao(1)
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => Escreve(1)">1</button>
         </div>
         <div class="col">
-            @Botao(2)
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => Escreve(2)">2</button>
         </div>
         <div class="col">
-            @Botao(3)
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => Escreve(3)">3</button>
         </div>
         <div class="col">
             <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => CliqueEmOperador('-')">-</button>
@@ -75,10 +76,10 @@
     </div>
     <div class="row row-cols-auto g-0">
         <div class="col">
-            @Botao(0)
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => Escreve(0)">0</button>
         </div>
         <div class="col">
-            @Botao(',')
+            <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="() => Escreve(',')">,</button>
         </div>
         <div class="col">
             <button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg" @onclick="Igual">=</button>
@@ -92,15 +93,14 @@
 
 <!--<button style="width: 67px;" type="button" class="btn btn-outline-primary btn-lg">=</button>-->
 @code {
+    public string? Visor { get; set; } = "0";
+    public string? VisorOperacao { get; set; }
+    private string? Operador { get; set; }
+    private decimal Operando1 { get; set; }
+    private decimal Operando2 { get; set; }
 
-    List<Object> ListaVisor = new List<object>();
-    string? Visor { get; set; }
-    string? VisorOperacao { get; set; }
-    string? Operador { get; set; }
-    decimal Operando1 { get; set; }
-    decimal Operando2 { get; set; }
 
-    RenderFragment Botao(char valor)
+    private RenderFragment Botao(char valor)
     {
         return builder =>
         {
@@ -116,7 +116,7 @@
         };
     }
 
-    RenderFragment Botao(int valor)
+    private RenderFragment Botao(int valor)
     {
         return builder =>
         {
@@ -132,7 +132,7 @@
         };
     }
 
-    RenderFragment Botao()
+    private RenderFragment Botao()
     {
         return builder =>
         {
@@ -145,22 +145,24 @@
         };
     }
 
-    void ApagaTudo()
+    public void ApagaTudo()
     {
-        Visor = "";
+        Visor = "0";
+        VisorOperacao = "";
         Operador = "";
         Operando1 = Decimal.Zero;
         Operando2 = Decimal.Zero;
         FlagSegundaParteDaOperacao = false;
+        FlagOperadorPressionado = false;
     }
 
-    void Apaga()
+    public void Apaga()
     {
-        if (VisorNaoEstaVazio())
+        if (VisorNaoEstaVazio() || Visor != "0")
             Visor = Visor.Remove(Visor.Length - 1);
     }
 
-    bool VisorNaoEstaVazio()
+    private bool VisorNaoEstaVazio()
     {
         if (Visor == "" || Visor == null)
             return false;
@@ -168,23 +170,44 @@
         return true;
     }
 
-    void Escreve(char valorBotao)
+    public void Escreve(char valorBotao)
     {
-        ListaVisor.Add(valorBotao);
-        Visor += valorBotao;
-        StateHasChanged();
+        string valorBotaoEmString = valorBotao.ToString();
+
+        if (Visor == "0" && CaractereNaoEhOperador(valorBotaoEmString) && CaractereNaoEhVirgula(valorBotaoEmString))
+        {
+            Visor = valorBotaoEmString;
+        }
+        else
+        {
+            Visor += valorBotaoEmString;
+        }
     }
 
-    void Escreve(int valorBotao)
+    public void Escreve(int valorBotao)
     {
-        ListaVisor.Add(valorBotao);
-        Visor += valorBotao.ToString();
-        StateHasChanged();
+        string valorBotaoEmString = valorBotao.ToString();
+
+        if (Visor == "0" && CaractereNaoEhOperador(valorBotaoEmString) && CaractereNaoEhVirgula(valorBotaoEmString))
+        {
+            Visor = valorBotaoEmString;
+        }
+        else
+        {
+            Visor += valorBotaoEmString;
+        }
     }
 
-    bool FlagSegundaParteDaOperacao { get; set; }
+    private bool FlagOperadorPressionado { get; set; }
 
-    void CliqueEmOperador()
+    private bool FlagSegundaParteDaOperacao { get; set; }
+
+    const char somarChar = '+';
+    const char subtrairChar = '-';
+    const char multplicarChar = 'x';
+    const char dividirChar = '%';
+
+    public void CliqueEmOperador()
     {
         string subStringVisor = String.Empty;
 
@@ -224,41 +247,36 @@
         }
     }
 
-    void CliqueEmOperador(char valorBotao)
+    public void CliqueEmOperador(char valorBotao)
     {
-        Escreve(valorBotao);
-
-        string subStringVisor = String.Empty;
 
         try
         {
+
             if (VisorNaoEstaVazio())
             {
-                foreach (var caractere in Visor)
+
+                if (FlagOperadorPressionado == false)
                 {
-
-                    if (CaractereEhOperador(caractere))
-                    {
-                        Operador = Char.ToString(caractere);
-                    }
-                    else
-                    {
-                        subStringVisor += caractere;
-                    }
-
+                    Escreve(valorBotao);
+                    FlagOperadorPressionado = true; 
                 }
 
-                if (FlagSegundaParteDaOperacao)
-                {
-                    Operando2 = decimal.Parse(subStringVisor);
-                }
-                else
-                {
-                    Operando1 = decimal.Parse(subStringVisor);
-                    VisorOperacao = Visor;
-                    ApagaVisor();
-                    FlagSegundaParteDaOperacao = true;
-                }
+
+
+                //string subStringVisor = RetornaSubstringVisor();
+
+                //if (FlagSegundaParteDaOperacao == false)
+                //{                    
+                //    Operando1 = decimal.Parse(subStringVisor);
+                //    VisorOperacao = Visor;
+                //    ApagaVisor();
+                //    FlagSegundaParteDaOperacao = true;
+                //}
+                //else
+                //{                    
+                //    Operando2 = decimal.Parse(subStringVisor);
+                //}
             }
 
         }
@@ -268,7 +286,61 @@
         }
     }
 
-    bool CaractereEhOperador(char caractere)
+
+    //public void CliqueEmOperador(char valorBotao)
+    //{
+    //    FlagOperadorPressionado = true;
+
+    //    if (!FlagSegundaParteDaOperacao)
+    //        Escreve(valorBotao);
+
+    //    try
+    //    {
+    //        if (VisorNaoEstaVazio())
+    //        {
+    //            string subStringVisor = RetornaSubstringVisor();
+
+    //            if (FlagSegundaParteDaOperacao == false)
+    //            {                    
+    //                Operando1 = decimal.Parse(subStringVisor);
+    //                VisorOperacao = Visor;
+    //                ApagaVisor();
+    //                FlagSegundaParteDaOperacao = true;
+    //            }
+    //            else
+    //            {                    
+    //                Operando2 = decimal.Parse(subStringVisor);
+    //            }
+    //        }
+
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Console.WriteLine("Excecao: " + ex);
+    //    }
+    //}
+
+    private string RetornaSubstringVisor()
+    {
+        string subStringVisor = String.Empty;
+
+        foreach (var caractere in Visor)
+        {
+            if (CaractereEhOperador(caractere))
+            {
+                Operador = Char.ToString(caractere);
+            }
+            else
+            {
+                subStringVisor += caractere;
+            }
+
+        }
+
+        return subStringVisor;
+    }
+
+    private bool CaractereEhOperador(char caractere)
     {
         string caractereEmString = Char.ToString(caractere);
 
@@ -281,9 +353,54 @@
         return false;
     }
 
-    void ApagaVisor() => Visor = "";
+    private bool CaractereEhOperador(string caractere)
+    {
 
-    void Igual()
+        if (caractere == "+" || caractere == "-" ||
+            caractere == "x" || caractere == "%")
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool CaractereNaoEhOperador(char caractere)
+    {
+        string caractereEmString = Char.ToString(caractere);
+
+        if (caractereEmString == "+" || caractereEmString == "-" ||
+            caractereEmString == "x" || caractereEmString == "%")
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool CaractereNaoEhOperador(string caractere)
+    {
+
+        if (caractere == "+" || caractere == "-" ||
+            caractere == "x" || caractere == "%")
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool CaractereNaoEhVirgula(string caractere)
+    {
+        if (caractere == ",")
+            return false;
+
+        return true;
+    }
+
+    public void ApagaVisor() => Visor = "";
+
+    public void Igual()
     {
         if (VisorNaoEstaVazio())
         {
@@ -303,7 +420,7 @@
 
     }
 
-    decimal EfetucaOperacao()
+    private decimal EfetucaOperacao()
     {
         switch (Operador)
         {
