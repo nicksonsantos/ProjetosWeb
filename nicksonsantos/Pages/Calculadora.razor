@@ -95,9 +95,11 @@
 @code {
     public string? Visor { get; set; } = "0";
     public string? VisorOperacao { get; set; }
+    public string? UltimoCaractere { get; set; }
     private string? Operador { get; set; }
     private decimal Operando1 { get; set; }
     private decimal Operando2 { get; set; }
+
 
 
     private RenderFragment Botao(char valor)
@@ -154,6 +156,7 @@
         Operando2 = Decimal.Zero;
         FlagSegundaParteDaOperacao = false;
         FlagOperadorPressionado = false;
+        FlagOperacaoConcluida = false;
     }
 
     public void Apaga()
@@ -170,9 +173,16 @@
         return true;
     }
 
+    private bool FlagOperacaoConcluida { get; set; }
+
     public void Escreve(char valorBotao)
     {
         string valorBotaoEmString = valorBotao.ToString();
+
+        if (FlagOperacaoConcluida)
+        {
+            ApagaTudo();
+        }
 
         if (Visor == "0" && CaractereNaoEhOperador(valorBotaoEmString) && CaractereNaoEhVirgula(valorBotaoEmString))
         {
@@ -182,12 +192,23 @@
         {
             Visor += valorBotaoEmString;
         }
+
+        UltimoCaractere = valorBotaoEmString;
+
     }
 
     public void Escreve(int valorBotao)
     {
         string valorBotaoEmString = valorBotao.ToString();
 
+        if (VisorComMaisDeNoveCaracteres())
+            return;
+
+        if (FlagOperacaoConcluida)
+        {
+            ApagaTudo();
+        }
+
         if (Visor == "0" && CaractereNaoEhOperador(valorBotaoEmString) && CaractereNaoEhVirgula(valorBotaoEmString))
         {
             Visor = valorBotaoEmString;
@@ -196,6 +217,17 @@
         {
             Visor += valorBotaoEmString;
         }
+
+        UltimoCaractere = valorBotaoEmString;
+
+    }
+
+    public bool VisorComMaisDeNoveCaracteres()
+    {
+        if (Visor.Length > 9)
+            return true;
+
+        return false;
     }
 
     private bool FlagOperadorPressionado { get; set; }
@@ -207,77 +239,44 @@
     const char multplicarChar = 'x';
     const char dividirChar = '%';
 
-    public void CliqueEmOperador()
-    {
-        string subStringVisor = String.Empty;
-
-        try
-        {
-            if (VisorNaoEstaVazio())
-            {
-                foreach (var caractere in Visor)
-                {
-
-                    if (CaractereEhOperador(caractere))
-                    {
-                        Operador = Char.ToString(caractere);
-                    }
-                    else
-                    {
-                        subStringVisor += caractere;
-                    }
-                }
-
-                if (FlagSegundaParteDaOperacao)
-                {
-                    Operando2 = decimal.Parse(subStringVisor);
-                }
-                else
-                {
-                    Operando1 = decimal.Parse(subStringVisor);
-                    VisorOperacao = Visor;
-                    ApagaVisor();
-                    FlagSegundaParteDaOperacao = true;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Excecao: " + ex);
-        }
-    }
-
     public void CliqueEmOperador(char valorBotao)
     {
 
         try
         {
 
-            if (VisorNaoEstaVazio())
+            if (FlagOperadorPressionado && CaractereEhOperador(UltimoCaractere))
             {
-
-                if (FlagOperadorPressionado == false)
-                {
-                    Escreve(valorBotao);
-                    FlagOperadorPressionado = true; 
-                }
-
-
-
-                //string subStringVisor = RetornaSubstringVisor();
-
-                //if (FlagSegundaParteDaOperacao == false)
-                //{                    
-                //    Operando1 = decimal.Parse(subStringVisor);
-                //    VisorOperacao = Visor;
-                //    ApagaVisor();
-                //    FlagSegundaParteDaOperacao = true;
-                //}
-                //else
-                //{                    
-                //    Operando2 = decimal.Parse(subStringVisor);
-                //}
+                Console.WriteLine("Yes");
+                SubstituiOperador(valorBotao);
+                FlagOperadorPressionado = true;
+                return;
             }
+
+            if (VisorEstaVazio())
+            {
+                return;
+            }
+
+            if (FlagOperacaoConcluida)
+            {
+                FlagOperacaoConcluida = false;
+                Escreve(valorBotao);
+                FlagOperadorPressionado = true;
+                Operador = valorBotao.ToString();
+                VisorOperacao = Visor;
+                ApagaVisor();
+                return;
+            }
+
+
+            Escreve(valorBotao);
+            FlagOperadorPressionado = true;
+            Operador = valorBotao.ToString();
+            VisorOperacao = Visor;
+            ApagaVisor();
+            return;
+
 
         }
         catch (Exception ex)
@@ -286,58 +285,34 @@
         }
     }
 
-
-    //public void CliqueEmOperador(char valorBotao)
-    //{
-    //    FlagOperadorPressionado = true;
-
-    //    if (!FlagSegundaParteDaOperacao)
-    //        Escreve(valorBotao);
-
-    //    try
-    //    {
-    //        if (VisorNaoEstaVazio())
-    //        {
-    //            string subStringVisor = RetornaSubstringVisor();
-
-    //            if (FlagSegundaParteDaOperacao == false)
-    //            {                    
-    //                Operando1 = decimal.Parse(subStringVisor);
-    //                VisorOperacao = Visor;
-    //                ApagaVisor();
-    //                FlagSegundaParteDaOperacao = true;
-    //            }
-    //            else
-    //            {                    
-    //                Operando2 = decimal.Parse(subStringVisor);
-    //            }
-    //        }
-
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Console.WriteLine("Excecao: " + ex);
-    //    }
-    //}
-
-    private string RetornaSubstringVisor()
+    private bool VisorEstaVazio()
     {
-        string subStringVisor = String.Empty;
+        if (Visor == "" || Visor == null)
+            return true;
 
-        foreach (var caractere in Visor)
-        {
-            if (CaractereEhOperador(caractere))
-            {
-                Operador = Char.ToString(caractere);
-            }
-            else
-            {
-                subStringVisor += caractere;
-            }
+        return false;
+    }
 
-        }
+    private void SubstituiOperador(char valorBotao)
+    {
+        ApagaVisorOperacao();
+        VisorOperacao += valorBotao;
+        UltimoCaractere = valorBotao.ToString();
+        Operador = valorBotao.ToString();
+    }
 
-        return subStringVisor;
+    public void ApagaVisorOperacao()
+    {
+        if (VisorOperacaoNaoEstaVazio() || Visor != "0")
+            VisorOperacao = VisorOperacao.Remove(VisorOperacao.Length - 1);
+    }
+
+    private bool VisorOperacaoNaoEstaVazio()
+    {
+        if (VisorOperacao == "" || VisorOperacao == null)
+            return false;
+
+        return true;
     }
 
     private bool CaractereEhOperador(char caractere)
@@ -402,20 +377,30 @@
 
     public void Igual()
     {
-        if (VisorNaoEstaVazio())
+        try
         {
-            try
+            if (VisorEstaVazio())
+                return;
+
+            if(FlagOperadorPressionado)
             {
-                CliqueEmOperador();
-                decimal retornoOperacao = EfetucaOperacao();
-                ApagaTudo();
-                Visor = retornoOperacao.ToString();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Excecao" + ex);
             }
 
+            Operando1 = Decimal.Parse(VisorOperacao.Remove(VisorOperacao.Length - 1));
+            Operando2 = Decimal.Parse(Visor);
+            decimal retornoOperacao = EfetucaOperacao();
+            string retornoOperacaoEmString = retornoOperacao.ToString("G8");
+            //Visor = retornoOperacaoEmString.Length > 8 ? retornoOperacaoEmString;
+            Visor = retornoOperacaoEmString;
+            VisorOperacao = Operando1.ToString() + Operador + Operando2.ToString() + "=";
+            FlagOperacaoConcluida = true;
+            FlagOperadorPressionado = false;
+            UltimoCaractere = retornoOperacao.ToString();
+
+        } 
+        catch (Exception ex)
+        {
+            Console.WriteLine("Excecao" + ex);
         }
 
     }
@@ -431,6 +416,5 @@
             default: throw new Exception("Operacao Invalida");
         }
     }
-
 
 }

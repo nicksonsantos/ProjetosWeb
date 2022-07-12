@@ -153,5 +153,34 @@ namespace nicksonsantosTests
             Assert.Equal("3+3", calculadora.VisorOperacao);
         }
 
+        [Theory]
+        [InlineData('+', '-')]
+        [InlineData('-', 'x')]
+        [InlineData('x', '%')]
+        [InlineData('%', '+')]
+        public void ClicarEmOperadorDepoisClicarEmOutroOperadorMudaOperador(char operadorUm, char operadorDois)
+        {
+            // Act
+            calculadora.CliqueEmOperador(operadorUm);
+            calculadora.CliqueEmOperador(operadorDois);
+
+            // Assert
+            Assert.Equal("0" + operadorDois, calculadora.Visor);
+        }
+
+        [Fact]
+        public void ClicarUmMaisUmMaisUmCalculaSemClicarIgual()
+        {
+            // Act
+            calculadora.Escreve(1);
+            calculadora.CliqueEmOperador('+');
+            calculadora.Escreve(1);
+            calculadora.CliqueEmOperador('+');
+
+            // Assert
+            Assert.Equal("2+", calculadora.VisorOperacao);
+            Assert.Equal("2", calculadora.Visor);
+        }
+
     }
 }
