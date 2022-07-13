@@ -104,7 +104,7 @@ namespace nicksonsantosTests
             calculadora.CliqueEmOperador(operador);
 
             // Assert
-            Assert.Equal("0" + operador.ToString(), calculadora.Visor);
+            Assert.Equal("0" + operador.ToString(), calculadora.VisorOperacao);
         }
 
         [Fact]
@@ -150,7 +150,7 @@ namespace nicksonsantosTests
 
             // Assert
             Assert.Equal("6", calculadora.Visor);
-            Assert.Equal("3+3", calculadora.VisorOperacao);
+            Assert.Equal("3+3=", calculadora.VisorOperacao);
         }
 
         [Theory]
@@ -165,7 +165,7 @@ namespace nicksonsantosTests
             calculadora.CliqueEmOperador(operadorDois);
 
             // Assert
-            Assert.Equal("0" + operadorDois, calculadora.Visor);
+            Assert.Equal("0" + operadorDois, calculadora.VisorOperacao);
         }
 
         [Fact]
@@ -179,7 +179,7 @@ namespace nicksonsantosTests
 
             // Assert
             Assert.Equal("2+", calculadora.VisorOperacao);
-            Assert.Equal("2", calculadora.Visor);
+            Assert.Equal("", calculadora.Visor);
         }
 
     }

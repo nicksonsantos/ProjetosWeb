@@ -13,7 +13,7 @@
     &nbsp
     <div class="row row-cols-auto g-0">
         <div class="col">
-            <input type="text" id="visor" @bind="VisorOperacao" style="width: 268px; text-align:right;" readonly />
+            <input type="text" id="visor" @bind="VisorOperacao" style="width: 268px; text-align:right; margin-bottom: 3px;" readonly />
             <input type="text" id="visor" @bind="Visor" style="width: 268px; text-align:right;" readonly />
         </div>
     </div>
@@ -99,40 +99,6 @@
     private string? Operador { get; set; }
     private decimal Operando1 { get; set; }
     private decimal Operando2 { get; set; }
-
-
-
-    private RenderFragment Botao(char valor)
-    {
-        return builder =>
-        {
-            builder.OpenElement(1, "button");
-            builder.AddAttribute(2, "style", "width: 67px;");
-            builder.AddAttribute(3, "type", "button");
-            builder.AddAttribute(4, "class", "btn btn-outline-primary btn-lg");
-            builder.AddAttribute(5, "onclick",
-                Microsoft.AspNetCore.Components.EventCallback.Factory.Create(valor,
-                    () => Escreve(valor)));
-            builder.AddContent(6, valor);
-            builder.CloseElement();
-        };
-    }
-
-    private RenderFragment Botao(int valor)
-    {
-        return builder =>
-        {
-            builder.OpenElement(1, "button");
-            builder.AddAttribute(2, "style", "width: 67px;");
-            builder.AddAttribute(3, "type", "button");
-            builder.AddAttribute(4, "class", "btn btn-outline-primary btn-lg");
-            builder.AddAttribute(5, "onclick",
-                Microsoft.AspNetCore.Components.EventCallback.Factory.Create(valor,
-                    () => Escreve(valor)));
-            builder.AddContent(6, valor);
-            builder.CloseElement();
-        };
-    }
 
     private RenderFragment Botao()
     {
@@ -269,6 +235,22 @@
                 return;
             }
 
+            if (FlagOperadorPressionado)
+            {
+                Operando1 = Decimal.Parse(VisorOperacao.Remove(VisorOperacao.Length - 1));
+                Operando2 = Decimal.Parse(Visor);
+                Operador = valorBotao.ToString();
+                decimal retornoOperacao = EfetucaOperacao();
+                string retornoOperacaoEmString = retornoOperacao.ToString("G8");
+
+                Visor = retornoOperacaoEmString;
+                VisorOperacao = Operando1.ToString() + Operador + Operando2.ToString() + "=";
+                FlagOperacaoConcluida = true;
+                FlagOperadorPressionado = false;
+                UltimoCaractere = retornoOperacao.ToString();
+                CliqueEmOperador(valorBotao);
+                return;                
+            }            
 
             Escreve(valorBotao);
             FlagOperadorPressionado = true;
@@ -380,17 +362,25 @@
         try
         {
             if (VisorEstaVazio())
-                return;
-
-            if(FlagOperadorPressionado)
             {
+                if(FlagOperadorPressionado == false)
+                    return;
             }
 
             Operando1 = Decimal.Parse(VisorOperacao.Remove(VisorOperacao.Length - 1));
-            Operando2 = Decimal.Parse(Visor);
+
+            if(FlagOperadorPressionado && CaractereEhOperador(UltimoCaractere))
+            {
+                Operando2 = Operando1;
+            } 
+            else
+            {
+                Operando2 = Decimal.Parse(Visor);
+            }
+
             decimal retornoOperacao = EfetucaOperacao();
             string retornoOperacaoEmString = retornoOperacao.ToString("G8");
-            //Visor = retornoOperacaoEmString.Length > 8 ? retornoOperacaoEmString;
+
             Visor = retornoOperacaoEmString;
             VisorOperacao = Operando1.ToString() + Operador + Operando2.ToString() + "=";
             FlagOperacaoConcluida = true;
@@ -416,5 +406,37 @@
             default: throw new Exception("Operacao Invalida");
         }
     }
+
+    //private RenderFragment Botao(char valor)
+    //{
+    //    return builder =>
+    //    {
+    //        builder.OpenElement(1, "button");
+    //        builder.AddAttribute(2, "style", "width: 67px;");
+    //        builder.AddAttribute(3, "type", "button");
+    //        builder.AddAttribute(4, "class", "btn btn-outline-primary btn-lg");
+    //        builder.AddAttribute(5, "onclick",
+    //            Microsoft.AspNetCore.Components.EventCallback.Factory.Create(valor,
+    //                () => Escreve(valor)));
+    //        builder.AddContent(6, valor);
+    //        builder.CloseElement();
+    //    };
+    //}
+
+    //private RenderFragment Botao(int valor)
+    //{
+    //    return builder =>
+    //    {
+    //        builder.OpenElement(1, "button");
+    //        builder.AddAttribute(2, "style", "width: 67px;");
+    //        builder.AddAttribute(3, "type", "button");
+    //        builder.AddAttribute(4, "class", "btn btn-outline-primary btn-lg");
+    //        builder.AddAttribute(5, "onclick",
+    //            Microsoft.AspNetCore.Components.EventCallback.Factory.Create(valor,
+    //                () => Escreve(valor)));
+    //        builder.AddContent(6, valor);
+    //        builder.CloseElement();
+    //    };
+    //}
 
 }
